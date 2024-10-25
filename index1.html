@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Integración por Sustitución</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/10.6.4/math.min.js"></script>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            background-color: #000000; 
+            color: #003cff; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            padding: 20px; 
+        }
+        .calculator { 
+            border: 1px solid #5e5e5e; 
+            padding: 20px; 
+            border-radius: 10px; 
+            width: 100%; 
+            max-width: 500px; 
+            background: #fff; 
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); 
+        }
+        .calculator input, .calculator select, .calculator button { 
+            width: 100%; 
+            padding: 10px; 
+            margin: 5px 0; 
+            border-radius: 5px; 
+            border: 1px solid #ccc; 
+            font-size: 1em; 
+        }
+        .result { 
+            font-weight: bold; 
+            color: #003cff; 
+            margin-top: 10px; 
+            white-space: pre-wrap;
+        }
+        .steps {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Integración por Sustitución</h1>
+    <div class="calculator">
+        <label for="function-type">Tipo de función:</label>
+        <select id="function-type">
+            <option value="power">Potencia (x^n)</option>
+            <option value="exp">Exponencial (e^x)</option>
+            <option value="sin">Seno (sin(x))</option>
+            <option value="cos">Coseno (cos(x))</option>
+        </select>
+        
+        <label for="coefficient">Coeficiente:</label>
+        <input type="number" id="coefficient" value="1" step="any" placeholder="Ej. 2">
+        
+        <label for="power">Exponente (para potencias):</label>
+        <input type="number" id="power" value="1" step="any" placeholder="Ej. 2">
+        
+        <button onclick="calculateIntegral()">Calcular Integral</button>
+        <div class="result" id="result-output"></div>
+        <div class="steps" id="steps-output"></div>
+    </div>
+
+    <script>
+        function calculateIntegral() {
+            const type = document.getElementById("function-type").value;
+            const coefficient = parseFloat(document.getElementById("coefficient").value);
+            const power = parseFloat(document.getElementById("power").value);
+            
+            let result = "";
+            let steps = "Pasos de resolución:\n";
+            
+            try {
+                switch(type) {
+                    case "power":
+                        if (power === -1) {
+                            result = `${coefficient}ln|x| + C`;
+                            steps += `1. Para x^(-1), la integral es ln|x|\n`;
+                            steps += `2. Multiplicamos por el coeficiente ${coefficient}\n`;
+                        } else {
+                            const newPower = power + 1;
+                            result = `${coefficient/newPower}x^${newPower} + C`;
+                            steps += `1. Incrementamos el exponente en 1: ${power} → ${newPower}\n`;
+                            steps += `2. Dividimos el coeficiente por el nuevo exponente: ${coefficient} → ${coefficient/newPower}\n`;
+                        }
+                        break;
+                    
+                    case "exp":
+                        result = `${coefficient}e^x + C`;
+                        steps += `1. La integral de e^x es e^x\n`;
+                        steps += `2. Multiplicamos por el coeficiente ${coefficient}\n`;
+                        break;
+                    
+                    case "sin":
+                        result = `-${coefficient}cos(x) + C`;
+                        steps += `1. La integral de sin(x) es -cos(x)\n`;
+                        steps += `2. Multiplicamos por el coeficiente ${coefficient}\n`;
+                        break;
+                    
+                    case "cos":
+                        result = `${coefficient}sin(x) + C`;
+                        steps += `1. La integral de cos(x) es sin(x)\n`;
+                        steps += `2. Multiplicamos por el coeficiente ${coefficient}\n`;
+                        break;
+                }
+                
+                document.getElementById("result-output").innerHTML = `La integral es: ${result}`;
+                document.getElementById("steps-output").innerHTML = steps;
+            } catch (error) {
+                document.getElementById("result-output").innerHTML = "Error en el cálculo. Por favor verifica los valores ingresados.";
+                document.getElementById("steps-output").innerHTML = "";
+            }
+        }
+    </script>
+</body>
+</html>
